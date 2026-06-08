@@ -4,13 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.presenceregister.ui.theme.PresenceRegisterTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +18,25 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PresenceRegisterTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                NavGraph()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
+fun NavGraph() {
+    val navController = rememberNavController()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val vm: PresenceViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(
+        context.applicationContext as android.app.Application)
     )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PresenceRegisterTheme {
-        Greeting("Android")
+    NavHost(navController, startDestination = "main") {
+        composable("main") { MainScreen(navController, vm) }
+        composable(route = "register") {RegistrationScreen(navController, vm)}
+        composable(route = "exit") {ExitScreen(navController, vm)}
+        composable(route = "data") {DataScreen(navController, vm)}
     }
 }
