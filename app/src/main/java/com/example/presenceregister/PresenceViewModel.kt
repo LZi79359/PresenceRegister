@@ -16,7 +16,7 @@ class PresenceViewModel(application: Application) : AndroidViewModel(application
     // Initialisation of data
     private val dao = AppDatabase.getInstance(application).personDao()
     private val today = LocalDate.now().toString()
-    private val correctPin = "1234"
+    private var correctPin = "1234"
     private val _people = MutableStateFlow<List<Person>>(emptyList())
     val people: StateFlow<List<Person>> = _people.asStateFlow()
 
@@ -61,5 +61,9 @@ class PresenceViewModel(application: Application) : AndroidViewModel(application
     // checks if the pin matches
     fun checkPin(input: String): Boolean {
         return input == correctPin
+    }
+
+    fun changePin(input :String) {
+        correctPin = input
     }
 }

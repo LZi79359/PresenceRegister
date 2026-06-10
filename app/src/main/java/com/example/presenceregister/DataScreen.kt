@@ -26,6 +26,11 @@ fun DataScreen(nav: NavController, vm: PresenceViewModel) {
     var pinInput by remember { mutableStateOf("") }
     var pinError by remember { mutableStateOf(false) }
     var unlocked by remember { mutableStateOf(false) }
+    var showChangePin by remember { mutableStateOf(false) }
+    var oldPinInput by remember { mutableStateOf("") }
+    var newPinInput by remember { mutableStateOf("") }
+    var changePinError by remember { mutableStateOf("") }
+    var confirmPinInput by remember { mutableStateOf("") }
 
     // Show pin dialog if not unlocked
     if (!unlocked) {
@@ -64,10 +69,88 @@ fun DataScreen(nav: NavController, vm: PresenceViewModel) {
                 }) { Text("Confirm") }
             },
             dismissButton = {
-                TextButton(onClick = { nav.popBackStack() }) { Text("Cancel") }
+                Row {
+                    TextButton(onClick = { nav.popBackStack() }) { Text("Cancel") }
+                    TextButton(onClick = { showChangePin = true}) { Text("Change PIN") }
+                }
             }
         )
-    } else {
+    }
+
+    if (showChangePin) {
+        AlertDialog(
+            onDismissRequest = { nav.popBackStack() }, // dismiss = go back
+            title = { Text("Change PIN") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = oldPinInput,
+                        onValueChange = {
+                            oldPinInput = it
+                            changePinError = ""
+                        },
+                        label = { Text("Old PIN") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                        isError = changePinError.isNotEmpty(),
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = newPinInput,
+                        onValueChange = {
+                            newPinInput = it
+                            changePinError = ""
+                        },
+                        label = { Text("New PIN") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                        isError = changePinError.isNotEmpty(),
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = confirmPinInput,
+                        onValueChange = {
+                            confirmPinInput = it
+                            changePinError = ""
+                        },
+                        label = { Text("Confirm new PIN") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                        isError = changePinError.isNotEmpty(),
+                        singleLine = true
+                    )
+                    if (changePinError.isNotEmpty()) {
+                        Text(changePinError, color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    when {
+                        !vm.checkPin(oldPinInput) -> changePinError = "Current PIN is incorrect"
+                        newPinInput.length < 4 -> changePinError = "PIN must be at least 4 digits"
+                        newPinInput != confirmPinInput -> changePinError = "New PINs do not match"
+                        oldPinInput == newPinInput -> changePinError = "New PIN must be different from old PIN"
+                        else -> {
+                            vm.changePin(newPinInput)
+                            showChangePin = false
+                            oldPinInput = ""
+                            newPinInput = ""
+                            confirmPinInput = ""
+                        }
+                    }
+                })  { Text("Confirm") }
+            },
+
+            dismissButton = {
+                Row {
+                    TextButton(onClick = { showChangePin = false }) { Text("Cancel") }
+                }
+            }
+        )
+    }
+
+    else {
         // Actual data screen content
         Scaffold(
             topBar = {
