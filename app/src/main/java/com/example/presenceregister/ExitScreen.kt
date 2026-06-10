@@ -13,12 +13,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
+// Exit page, triggers upon pressing the out button
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExitScreen(nav: NavController, vm: PresenceViewModel) {
+    // gets all people who are inside
     val people by vm.people.collectAsState()
     val inside = people.filter { it.isInside }
 
+    // person whose status is going to be changed upon confirmation
     var pendingPerson by remember { mutableStateOf<Person?>(null) }
 
     Scaffold(

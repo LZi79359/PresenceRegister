@@ -3,6 +3,7 @@ package com.example.presenceregister
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
+// functions handling the room database
 @Dao
 interface PersonDao {
 

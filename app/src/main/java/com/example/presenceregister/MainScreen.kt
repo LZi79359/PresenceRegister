@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
+// Main screen linking to the other pages
 @Composable
 fun MainScreen(nav: NavController, vm: PresenceViewModel) {
     val people by vm.people.collectAsState()

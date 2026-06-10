@@ -10,9 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
+// Registration screen, triggers on pressing 'In' on main screen, prompts user for their information and inserts it into the database
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistrationScreen(nav: NavController, vm: PresenceViewModel) {
+    // variable initialisation
     var name    by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
     var idCard  by remember { mutableStateOf("") }
@@ -44,6 +47,7 @@ fun RegistrationScreen(nav: NavController, vm: PresenceViewModel) {
 
             var errorMessage by remember { mutableStateOf("")}
 
+            // On submit checks that all fields have been entered, and then checks if the person is currently inside by checking the ID card, and if found its status.
             Button(
                 onClick = {
                     if (name.isNotBlank() && surname.isNotBlank() && idCard.isNotBlank()) {

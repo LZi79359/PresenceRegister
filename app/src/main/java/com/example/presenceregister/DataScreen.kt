@@ -14,11 +14,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
+// Data page, shows all the people who entered that day along with their current status, triggers on pressing "Today's Data" button
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DataScreen(nav: NavController, vm: PresenceViewModel) {
+    // gets all people from the database
     val people by vm.people.collectAsState()
 
+    // variable initialization
     var pinInput by remember { mutableStateOf("") }
     var pinError by remember { mutableStateOf(false) }
     var unlocked by remember { mutableStateOf(false) }
@@ -50,6 +54,7 @@ fun DataScreen(nav: NavController, vm: PresenceViewModel) {
             },
             confirmButton = {
                 TextButton(onClick = {
+                    // on confirm pressed compares input to pre-determined pin
                     if (vm.checkPin(pinInput)) {
                         unlocked = true
                     } else {
