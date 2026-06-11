@@ -58,4 +58,5 @@ The default PIN is 1234. To change it, update `correctPin` in `PresenceViewModel
 ``` kotlin
 private val correctPin = "1234"
 ```
-
+The PIN can also be changed through the application by using the `Change Pin` button
+If the old pin is forgotten the pin `00000000` (8 0s) can be used instead to change to a new pin
