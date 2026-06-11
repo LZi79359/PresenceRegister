@@ -11,5 +11,6 @@ data class Person(
     val surname: String,
     val idCard: String,
     val isInside: Boolean = true,
+    val mobileNumber: String,
     val date: String  // stored as "YYYY-MM-DD"
 )

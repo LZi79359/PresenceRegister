@@ -127,41 +127,41 @@ private val mediumContrastLightColorScheme = lightColorScheme(
 )
 
 private val highContrastLightColorScheme = lightColorScheme(
-    primary = primaryLightHighContrast,
-    onPrimary = onPrimaryLightHighContrast,
-    primaryContainer = primaryContainerLightHighContrast,
-    onPrimaryContainer = onPrimaryContainerLightHighContrast,
-    secondary = secondaryLightHighContrast,
-    onSecondary = onSecondaryLightHighContrast,
-    secondaryContainer = secondaryContainerLightHighContrast,
-    onSecondaryContainer = onSecondaryContainerLightHighContrast,
-    tertiary = tertiaryLightHighContrast,
-    onTertiary = onTertiaryLightHighContrast,
-    tertiaryContainer = tertiaryContainerLightHighContrast,
-    onTertiaryContainer = onTertiaryContainerLightHighContrast,
-    error = errorLightHighContrast,
-    onError = onErrorLightHighContrast,
-    errorContainer = errorContainerLightHighContrast,
-    onErrorContainer = onErrorContainerLightHighContrast,
-    background = backgroundLightHighContrast,
-    onBackground = onBackgroundLightHighContrast,
-    surface = surfaceLightHighContrast,
-    onSurface = onSurfaceLightHighContrast,
-    surfaceVariant = surfaceVariantLightHighContrast,
-    onSurfaceVariant = onSurfaceVariantLightHighContrast,
-    outline = outlineLightHighContrast,
-    outlineVariant = outlineVariantLightHighContrast,
-    scrim = scrimLightHighContrast,
-    inverseSurface = inverseSurfaceLightHighContrast,
-    inverseOnSurface = inverseOnSurfaceLightHighContrast,
-    inversePrimary = inversePrimaryLightHighContrast,
-    surfaceDim = surfaceDimLightHighContrast,
-    surfaceBright = surfaceBrightLightHighContrast,
-    surfaceContainerLowest = surfaceContainerLowestLightHighContrast,
-    surfaceContainerLow = surfaceContainerLowLightHighContrast,
-    surfaceContainer = surfaceContainerLightHighContrast,
-    surfaceContainerHigh = surfaceContainerHighLightHighContrast,
-    surfaceContainerHighest = surfaceContainerHighestLightHighContrast,
+    primary = Color.Yellow,
+    onPrimary = Color.Black,
+    primaryContainer = Color.Black,
+    onPrimaryContainer = Color.Yellow,
+    secondary = Color.Yellow,
+    onSecondary = Color.Black,
+    secondaryContainer = Color.Black,
+    onSecondaryContainer = Color.Yellow,
+    tertiary = Color.Yellow,
+    onTertiary = Color.Black,
+    tertiaryContainer = Color.Black,
+    onTertiaryContainer = Color.Yellow,
+    error = Color.Yellow,
+    onError = Color.Black,
+    errorContainer = Color.Black,
+    onErrorContainer = Color.Yellow,
+    background = Color.Black,
+    onBackground = Color.White,
+    surface = Color.Black,
+    onSurface = Color.White,
+    surfaceVariant = Color.Black,
+    onSurfaceVariant = Color.White,
+    outline = Color.Yellow,
+    outlineVariant = Color.Yellow,
+    scrim = Color.Black,
+    inverseSurface = Color.White,
+    inverseOnSurface = Color.Black,
+    inversePrimary = Color.Yellow,
+    surfaceDim = Color.Black,
+    surfaceBright = Color.Black,
+    surfaceContainerLowest = Color.Black,
+    surfaceContainerLow = Color.Black,
+    surfaceContainer = Color.Black,
+    surfaceContainerHigh = Color.Black,
+    surfaceContainerHighest = Color.Black
 )
 
 private val mediumContrastDarkColorScheme = darkColorScheme(
@@ -255,17 +255,17 @@ val unspecified_scheme = ColorFamily(
 @Composable
 fun PresenceRegisterTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
+    highContrast: Boolean = false,
     content: @Composable() () -> Unit
 ) {
     val colorScheme = when {
+        highContrast -> highContrastLightColorScheme
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> darkScheme
         else -> lightScheme
     }
 

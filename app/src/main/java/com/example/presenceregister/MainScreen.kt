@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 fun MainScreen(nav: NavController, vm: PresenceViewModel) {
     val people by vm.people.collectAsState()
     val countInside = people.count {it.isInside}
+    val highContrast by vm.highContrast.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize().padding(32.dp),
@@ -38,21 +39,41 @@ fun MainScreen(nav: NavController, vm: PresenceViewModel) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Button(
-                onClick = { nav.navigate("register") },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(64.dp)
-            ) {
-                Text("IN", fontSize = 20.sp)
+            if (highContrast) {
+                OutlinedButton(
+                    onClick = { nav.navigate("register") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(150.dp)
+                ) {
+                    Text("IN", fontSize = 50.sp)
+                }
+                OutlinedButton(
+                    onClick = { nav.navigate("exit") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(150.dp)
+                ) {
+                    Text("OUT", fontSize = 50.sp)
+                }
             }
-            Button(
-                onClick = { nav.navigate("exit") },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(64.dp)
-            ) {
-                Text("OUT", fontSize = 20.sp)
+            else {
+                Button(
+                    onClick = { nav.navigate("register") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(150.dp)
+                ) {
+                    Text("IN", fontSize = 50.sp)
+                }
+                Button(
+                    onClick = { nav.navigate("exit") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(150.dp)
+                ) {
+                    Text("OUT", fontSize = 50.sp)
+                }
             }
         }
 

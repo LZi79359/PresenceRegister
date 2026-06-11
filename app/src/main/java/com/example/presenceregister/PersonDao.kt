@@ -18,4 +18,5 @@ interface PersonDao {
 
     @Query("DELETE FROM people WHERE date != :date")
     suspend fun deletePreviousDays(date: String)
+
 }
