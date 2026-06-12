@@ -1,3 +1,7 @@
 <resources>
+<<<<<<< HEAD
     <string name="app_name">PresenceRegisterV2</string>
+=======
+    <string name="app_name">PresenceRegister</string>
+>>>>>>> 7d65d27f9f4fe61c0e04f94fa7bdef4886c4ef38
 </resources>
