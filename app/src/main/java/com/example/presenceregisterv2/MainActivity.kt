@@ -28,6 +28,11 @@ class MainActivity : ComponentActivity() {
             NavGraph()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        startLockTask()
+    }
 }
 
 @Composable
