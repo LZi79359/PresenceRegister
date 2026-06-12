@@ -15,13 +15,22 @@ class PresenceViewModel(application: Application) : AndroidViewModel(application
 
     // Initialisation of data
     private val dao = AppDatabase.getInstance(application).personDao()
+    private val staffDao = AppDatabase.getInstance(application).staffDao()
     private val today = LocalDate.now().toString()
     private var correctPin = "1234"
     private var masterPin = "00000000"
     private val _people = MutableStateFlow<List<Person>>(emptyList())
+    private val _staff = MutableStateFlow<List<Staff>>(emptyList())
     val people: StateFlow<List<Person>> = _people.asStateFlow()
+    val staff: StateFlow<List<Staff>> = _staff.asStateFlow()
     private val _highContrast = MutableStateFlow(false)
     val highContrast: StateFlow<Boolean> = _highContrast.asStateFlow()
+
+    private val _adminUnlocked = MutableStateFlow(false)
+    val adminUnlocked: StateFlow<Boolean> = _adminUnlocked.asStateFlow()
+
+    fun unlockAdmin() { _adminUnlocked.value = true }
+    fun lockAdmin() { _adminUnlocked.value = false }
 
     fun toggleHighContrast() {
         _highContrast.value = !_highContrast.value
@@ -40,10 +49,22 @@ class PresenceViewModel(application: Application) : AndroidViewModel(application
                 _people.value = list
             }
         }
+
+        viewModelScope.launch {
+            staffDao.getAllStaff().collect { list ->
+                _staff.value = list
+            }
+        }
     }
 
     // creates a new person object inside the database if the person isn't already inside
-    fun registerPerson(name: String, surname: String, idCard: String, mobileNumber: String): Boolean {
+    fun registerPerson(
+        name: String,
+        surname: String,
+        idCard: String,
+        mobileNumber: String,
+        isStaff: Boolean
+    ): Boolean {
         val alreadyInside = _people.value.any { it.idCard == idCard && it.isInside }
         if (alreadyInside) return false
 
@@ -53,6 +74,7 @@ class PresenceViewModel(application: Application) : AndroidViewModel(application
                 surname = surname.trim(),
                 idCard = idCard.trim(),
                 mobileNumber = mobileNumber.trim(),
+                isStaff = isStaff,
                 date = today
             ))
         }
@@ -77,5 +99,53 @@ class PresenceViewModel(application: Application) : AndroidViewModel(application
 
     fun changePin(input :String) {
         correctPin = input
+    }
+
+    fun signInStaff(pin: Int): Boolean {
+        val alreadyInside = _people.value.any {it.idCard == pin.toString() && it.isInside }
+        if (alreadyInside) return false
+
+        val staffMember = _staff.value.find { it.pin == pin } ?: return false
+
+        viewModelScope.launch {
+            dao.insert(
+                Person(
+                    name = staffMember.name,
+                    surname = staffMember.surname,
+                    idCard = pin.toString(),
+                    mobileNumber = staffMember.mobileNumber,
+                    isStaff = true,
+                    date = today
+                )
+            )
+        }
+        return true
+    }
+
+    fun registerStaff(
+        pin: Int,
+        name: String,
+        surname: String,
+        mobileNumber: String,
+    ): Boolean {
+        val alreadyExists = _staff.value.any { it.pin == pin }
+        if (alreadyExists) return false
+
+
+        viewModelScope.launch {
+            staffDao.insert(Staff(
+                pin = pin,
+                name = name.trim(),
+                surname = surname.trim(),
+                mobileNumber = mobileNumber.trim()
+            ))
+        }
+        return true
+    }
+
+    fun removeStaff(staff: Staff) {
+        viewModelScope.launch {
+            staffDao.delete(staff)
+        }
     }
 }

@@ -23,8 +23,6 @@ import androidx.navigation.NavController
 // Main screen linking to the other pages
 @Composable
 fun MainScreen(nav: NavController, vm: PresenceViewModel) {
-    val people by vm.people.collectAsState()
-    val countInside = people.count {it.isInside}
     val highContrast by vm.highContrast.collectAsState()
 
     Column(
@@ -32,8 +30,6 @@ fun MainScreen(nav: NavController, vm: PresenceViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
-        Text("People Inside: $countInside", fontSize = 22.sp)
-        Spacer(Modifier.height(40.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -41,46 +37,40 @@ fun MainScreen(nav: NavController, vm: PresenceViewModel) {
         ) {
             if (highContrast) {
                 OutlinedButton(
-                    onClick = { nav.navigate("register") },
+                    onClick = { nav.navigate("guest") },
                     modifier = Modifier
                         .weight(1f)
                         .height(150.dp)
                 ) {
-                    Text("IN", fontSize = 50.sp)
+                    Text("VISITOR", fontSize = 50.sp)
                 }
                 OutlinedButton(
-                    onClick = { nav.navigate("exit") },
+                    onClick = { nav.navigate("staff") },
                     modifier = Modifier
                         .weight(1f)
                         .height(150.dp)
                 ) {
-                    Text("OUT", fontSize = 50.sp)
+                    Text("STAFF", fontSize = 50.sp)
                 }
             }
             else {
                 Button(
-                    onClick = { nav.navigate("register") },
+                    onClick = { nav.navigate("guest") },
                     modifier = Modifier
                         .weight(1f)
                         .height(150.dp)
                 ) {
-                    Text("IN", fontSize = 50.sp)
+                    Text("VISITOR", fontSize = 50.sp)
                 }
                 Button(
-                    onClick = { nav.navigate("exit") },
+                    onClick = { nav.navigate("staff") },
                     modifier = Modifier
                         .weight(1f)
                         .height(150.dp)
                 ) {
-                    Text("OUT", fontSize = 50.sp)
+                    Text("STAFF", fontSize = 50.sp)
                 }
             }
-        }
-
-        Spacer(Modifier.height(24.dp))
-
-        OutlinedButton(onClick = {nav.navigate("data")}) {
-            Text("Today's Data")
         }
     }
 }

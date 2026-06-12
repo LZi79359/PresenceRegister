@@ -16,11 +16,11 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(nav: NavController, vm: PresenceViewModel) {
+fun StaffRegistrationScreen(nav: NavController, vm: PresenceViewModel) {
     // variable initialisation
     var name    by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
-    var idCard  by remember { mutableStateOf("") }
+    var pin  by remember { mutableStateOf("") }
     var mobileNumber by remember { mutableStateOf("") }
 
     Scaffold(
@@ -42,9 +42,9 @@ fun RegistrationScreen(nav: NavController, vm: PresenceViewModel) {
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            OutlinedTextField(value = pin, onValueChange = { pin = it }, label = { Text("Pin") }, modifier = Modifier.fillMaxWidth(), singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone))
             OutlinedTextField(value = name, onValueChange = { name = it.uppercase() }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
             OutlinedTextField(value = surname, onValueChange = { surname = it.uppercase() }, label = { Text("Surname") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-            OutlinedTextField(value = idCard, onValueChange = { idCard = it.uppercase() }, label = { Text("ID Card or Passport") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
             OutlinedTextField(value = mobileNumber, onValueChange = { mobileNumber = it }, label = { Text("Mobile Number") }, modifier = Modifier.fillMaxWidth(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), singleLine = true)
 
 
@@ -57,19 +57,20 @@ fun RegistrationScreen(nav: NavController, vm: PresenceViewModel) {
             Button(
                 onClick = {
                     errorMessage = when {
-                        name.isBlank() || surname.isBlank() || idCard.isBlank() || mobileNumber.isBlank() -> "All fields are required"
+                        name.isBlank() || surname.isBlank() || pin.isBlank() || mobileNumber.isBlank() -> "All fields are required"
                         !mobileNumber.all { it.isDigit() || it == '+' } -> "Only digits and + are allowed in mobile field"
                         mobileNumber.replace("+", "").length < 8 -> "Mobile number too Short"
                         mobileNumber.replace("+", "").length > 15 -> "Mobile number too Long"
+                        pin.isBlank() || pin.toIntOrNull() == null -> "PIN must be a valid number"
                         else -> ""
                     }
                     if (errorMessage.isEmpty()) {
-                        val success = vm.registerPerson(name, surname, idCard, mobileNumber, false)
+                        val success = vm.registerStaff(pin.toInt(), name,  surname, mobileNumber)
                         if (success) {
                             nav.popBackStack()
                         }
                         else {
-                            errorMessage = "This person is already inside"
+                            errorMessage = "This pin is already registered"
                         }
                     }
                     else{
