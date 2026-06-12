@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿# Presence Register
 Android app for tracking who is currently inside a building
 
