@@ -1,4 +1,4 @@
-package com.example.presenceregister
+package com.example.presenceregisterv1
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

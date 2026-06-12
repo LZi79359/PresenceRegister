@@ -1,4 +1,4 @@
-package com.example.presenceregister.ui.theme
+package com.example.presenceregisterv1.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

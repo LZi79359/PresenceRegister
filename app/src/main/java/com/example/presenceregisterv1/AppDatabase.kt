@@ -1,4 +1,4 @@
-package com.example.presenceregister
+package com.example.presenceregisterv1
 
 import android.content.Context
 import androidx.room.*

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.presenceregister"
+    namespace = "com.example.presenceregisterv1"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.presenceregister"
+        applicationId = "com.example.presenceregisterv1"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

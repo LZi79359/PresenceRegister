@@ -1,4 +1,4 @@
-package com.example.presenceregister
+package com.example.presenceregisterv1
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

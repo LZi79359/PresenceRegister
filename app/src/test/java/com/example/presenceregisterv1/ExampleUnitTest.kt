@@ -1,4 +1,4 @@
-package com.example.presenceregister
+package com.example.presenceregisterv1
 
 import org.junit.Test
 

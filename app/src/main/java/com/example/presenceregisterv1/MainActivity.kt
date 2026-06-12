@@ -1,4 +1,4 @@
-package com.example.presenceregister
+package com.example.presenceregisterv1
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,7 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.presenceregister.ui.theme.PresenceRegisterTheme
+import com.example.presenceregisterv1.ui.theme.PresenceRegisterTheme
 
 // Navigation initialization
 class MainActivity : ComponentActivity() {
