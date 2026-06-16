@@ -1,5 +1,8 @@
 package com.example.presenceregisterv2
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,12 +12,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @Composable
@@ -39,8 +40,35 @@ private fun PersonRow(
 @Composable
 fun StaffListScreen(nav: NavController, vm: PresenceViewModel) {
     val staff by vm.staff.collectAsState()
+    val csvMessage by vm.csvMessage.collectAsState()
     var pendingDelete by remember { mutableStateOf<Staff?>(null) }
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Show snackbar whenever csvMessage changes
+    LaunchedEffect(csvMessage) {
+        csvMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            vm.clearCsvMessage()
+        }
+    }
+
+    // SAF launcher: create a new CSV file for export
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/csv")
+    ) { uri: Uri? ->
+        uri?.let { vm.exportStaffToCsv(context, it) }
+    }
+
+    // SAF launcher: open an existing CSV file for import
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let { vm.importStaffFromCsv(context, it) }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Staff List") },
@@ -50,6 +78,18 @@ fun StaffListScreen(nav: NavController, vm: PresenceViewModel) {
                     }
                 },
                 actions = {
+                    OutlinedButton(
+                        onClick = { importLauncher.launch(arrayOf("text/csv", "text/comma-separated-values", "*/*")) },
+                        modifier = Modifier.padding(end = 4.dp)
+                    ) {
+                        Text("Import CSV")
+                    }
+                    OutlinedButton(
+                        onClick = { exportLauncher.launch("staff_export.csv") },
+                        modifier = Modifier.padding(end = 4.dp)
+                    ) {
+                        Text("Export CSV")
+                    }
                     OutlinedButton(onClick = { nav.navigate("registerStaff") }) {
                         Text("New User")
                     }
@@ -88,15 +128,15 @@ fun StaffListScreen(nav: NavController, vm: PresenceViewModel) {
                         col2 = "${person.name} ${person.surname}",
                         col3 = person.mobileNumber,
                         col4 = {
-                            OutlinedButton(onClick = {pendingDelete = person}) {
+                            OutlinedButton(onClick = { pendingDelete = person }) {
                                 Text("Remove User")
                             }
                         }
                     )
                 }
-                }
             }
         }
+    }
 
     pendingDelete?.let { person ->
         AlertDialog(
@@ -107,13 +147,12 @@ fun StaffListScreen(nav: NavController, vm: PresenceViewModel) {
             confirmButton = {
                 TextButton(onClick = {
                     vm.removeStaff(person)
+                    pendingDelete = null
                 }) { Text("Go") }
             },
             dismissButton = {
                 TextButton(onClick = { pendingDelete = null }) { Text("Cancel") }
             }
-       )
+        )
     }
 }
-
-

@@ -1,6 +1,8 @@
 package com.example.presenceregisterv2
 
 import android.app.Application
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -148,4 +150,73 @@ class PresenceViewModel(application: Application) : AndroidViewModel(application
             staffDao.delete(staff)
         }
     }
+
+    // --- CSV Export ---
+    // Writes all staff to a URI chosen by the user (via SAF file picker).
+    // Format: pin,name,surname,mobileNumber  (no header row)
+    fun exportStaffToCsv(context: Context, uri: Uri) {
+        viewModelScope.launch {
+            try {
+                context.contentResolver.openOutputStream(uri)?.use { stream ->
+                    val header = "pin,name,surname,mobileNumber"
+                    val rows = _staff.value.joinToString("\n") { s ->
+                        "${s.pin},${s.name},${s.surname},${s.mobileNumber}"
+                    }
+                    val lines = "$header\n$rows"
+                    stream.write(lines.toByteArray())
+                }
+                _csvMessage.value = "Exported ${_staff.value.size} staff member(s)."
+            } catch (e: Exception) {
+                _csvMessage.value = "Export failed: ${e.message}"
+            }
+        }
+    }
+
+    // --- CSV Import ---
+    // Reads staff from a URI chosen by the user.
+    // Each line must be: pin,name,surname,mobileNumber
+    // Blank lines and lines starting with '#' are skipped.
+    // Uses REPLACE conflict strategy — existing pins are overwritten.
+    fun importStaffFromCsv(context: Context, uri: Uri) {
+        viewModelScope.launch {
+            try {
+                val imported = mutableListOf<Staff>()
+                val skipped = mutableListOf<Int>()
+
+                context.contentResolver.openInputStream(uri)?.use { stream ->
+                    stream.bufferedReader().forEachLine { raw ->
+                        val line = raw.trim()
+                        if (line.isBlank() || line.startsWith("#") || line.startsWith("pin,")) return@forEachLine
+                        val parts = line.split(",")
+                        if (parts.size < 4) { skipped.add(0); return@forEachLine }
+                        val pin = parts[0].trim().toIntOrNull()
+                        if (pin == null) { skipped.add(0); return@forEachLine }
+                        val staff = Staff(
+                            pin = pin,
+                            name = parts[1].trim(),
+                            surname = parts[2].trim(),
+                            mobileNumber = parts[3].trim()
+                        )
+                        imported.add(staff)
+                    }
+                }
+
+                imported.forEach { staffDao.insert(it) }
+
+                _csvMessage.value = buildString {
+                    append("Imported ${imported.size} staff member(s).")
+                    if (skipped.isNotEmpty())
+                        append(" ${skipped.size} line(s) skipped (bad format).")
+                }
+            } catch (e: Exception) {
+                _csvMessage.value = "Import failed: ${e.message}"
+            }
+        }
+    }
+
+    // Snackbar message for CSV feedback
+    private val _csvMessage = MutableStateFlow<String?>(null)
+    val csvMessage: StateFlow<String?> = _csvMessage.asStateFlow()
+
+    fun clearCsvMessage() { _csvMessage.value = null }
 }
